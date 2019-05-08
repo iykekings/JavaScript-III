@@ -218,4 +218,4 @@ function combat(fighter1, fighter2) {
   console.log(`Fight Ended, ${winner} is the new champion!`);
 }
 
-combat(thor, thanos);
+// combat(thor, thanos);
