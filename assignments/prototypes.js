@@ -37,7 +37,7 @@ function Characterstats(charaAttrs) {
 Characterstats.prototype = Object.create(GameObject.prototype);
 
 Characterstats.prototype.takeDamage = function() {
-  return`${this.name} took damage`;
+  return `${this.name} took damage`;
 };
 
 /*
@@ -125,3 +125,97 @@ console.log(swordsman.destroy()); // Sir Mustachio was removed from the game.
 // * Create Villain and Hero constructor functions that inherit from the Humanoid constructor function.
 // * Give the Hero and Villains different methods that could be used to remove health points from objects which could result in destruction if health gets to 0 or drops below 0;
 // * Create two new objects, one a villain and one a hero and fight it out with methods!
+function Hero(hAttrs) {
+  Humanoid.call(this, hAttrs);
+  this.strength = hAttrs.strength;
+}
+
+Hero.prototype = Object.create(Humanoid.prototype);
+
+Hero.prototype.reduceHealthBy = function(severity) {
+  return this.healthPoints - severity > 0
+    ? (this.healthPoints -= severity)
+    : (() => {
+        this.healthPoints = 0;
+        return this.destroy();
+      })();
+};
+
+function Villain(vAttrs) {
+  Humanoid.call(this, vAttrs);
+  this.strength = vAttrs.strength;
+}
+
+Villain.prototype = Object.create(Humanoid.prototype);
+
+Villain.prototype.reduceHealthBy = function(severity) {
+  return this.healthPoints - severity * 2 > 0
+    ? (this.healthPoints -= severity * 2)
+    : (() => {
+        this.healthPoints = 0;
+        return this.destroy();
+      })();
+};
+
+const thor = new Hero({
+  createdAt: new Date(),
+  dimensions: {
+    length: 1,
+    width: 2,
+    height: 4
+  },
+  healthPoints: 1000,
+  strength: 2,
+  name: 'Thor',
+  team: 'Forest Kingdom',
+  weapons: ['Bow', 'Dagger'],
+  language: 'Elvish'
+});
+
+const thanos = new Villain({
+  createdAt: new Date(),
+  dimensions: {
+    length: 1,
+    width: 2,
+    height: 4
+  },
+  healthPoints: 1000,
+  strength: 4,
+  name: 'Thanos',
+  team: 'Forest Kingdom',
+  weapons: ['Bow', 'Dagger'],
+  language: 'Elvish'
+});
+
+// Gaming helper functions
+function randomIndex(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+// Starts a fight between two Humanoids
+function combat(fighter1, fighter2) {
+  console.log(`Fight Started between ${fighter1.name} and ${fighter2.name}`);
+  let winner = '';
+  while (fighter1.healthPoints && fighter2.healthPoints) {
+    const index = randomIndex(1, 2);
+    if (index == 1) {
+      console.log(fighter2.takeDamage());
+      console.log(
+        `${fighter2.name} healthPoints remaining ${fighter2.reduceHealthBy(
+          fighter1.strength
+        )}`
+      );
+    } else {
+      console.log(fighter1.takeDamage());
+      console.log(
+        `${fighter1.name} healthPoints remaining ${fighter1.reduceHealthBy(
+          fighter2.strength
+        )}`
+      );
+    }
+  }
+  winner = fighter1.healthPoints > 0 ? fighter1.name : fighter2.name;
+  console.log(`Fight Ended, ${winner} is the new champion!`);
+}
+
+combat(thor, thanos);
